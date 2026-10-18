@@ -260,19 +260,20 @@
                 
                 <!-- Right side form -->
                 <div class="bg-cardBg rounded-3xl p-8 md:p-10 shadow-xl border border-gray-800/60">
-                    <form action="#" method="POST" class="space-y-5">
+                    <form id="contact-form" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSfjWwt1eorYM6ylw_COW9yMPS4NMBfb4QnveaPyOKtjWJanHA/formResponse" method="POST" class="space-y-5">
                         <div>
-                            <input type="text" id="name" class="w-full px-5 py-4 bg-inputBg border border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primaryCyan focus:border-primaryCyan text-white outline-none placeholder-gray-500 transition" placeholder="Your Name">
+                            <input type="text" name="entry.1593919198" id="name" required class="w-full px-5 py-4 bg-inputBg border border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primaryCyan focus:border-primaryCyan text-white outline-none placeholder-gray-500 transition" placeholder="Your Name">
                         </div>
                         <div>
-                            <input type="email" id="email" class="w-full px-5 py-4 bg-inputBg border border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primaryCyan focus:border-primaryCyan text-white outline-none placeholder-gray-500 transition" placeholder="Your Email">
+                            <input type="email" name="entry.1809966246" id="email" required class="w-full px-5 py-4 bg-inputBg border border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primaryCyan focus:border-primaryCyan text-white outline-none placeholder-gray-500 transition" placeholder="Your Email">
                         </div>
                         <div>
-                            <textarea id="message" rows="5" class="w-full px-5 py-4 bg-inputBg border border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primaryCyan focus:border-primaryCyan text-white outline-none placeholder-gray-500 transition resize-none" placeholder="Your Message"></textarea>
+                            <textarea name="entry.164874367" id="message" required rows="5" class="w-full px-5 py-4 bg-inputBg border border-gray-700/50 rounded-xl focus:ring-1 focus:ring-primaryCyan focus:border-primaryCyan text-white outline-none placeholder-gray-500 transition resize-none" placeholder="Your Message"></textarea>
                         </div>
+                        <div id="form-status" class="hidden p-4 rounded-xl text-sm font-medium"></div>
                         <div class="pt-2">
-                            <button type="button" class="btn-gradient text-white font-bold py-3 px-8 rounded-full transition shadow-lg shadow-blue-500/20">
-                                Send Message
+                            <button type="submit" id="submit-btn" class="btn-gradient text-white font-bold py-3 px-8 rounded-full transition shadow-lg shadow-blue-500/20 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <span>Send Message</span>
                             </button>
                         </div>
                     </form>
@@ -303,5 +304,43 @@
         </div>
     </footer>
 
+    <script>
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formStatus = document.getElementById('form-status');
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const originalBtnContent = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Sending...</span>';
+
+                formStatus.className = 'hidden';
+                formStatus.textContent = '';
+
+                const formData = new FormData(contactForm);
+
+                try {
+                    await fetch(contactForm.action, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: formData
+                    });
+
+                    formStatus.innerHTML = '<div class="flex items-center"><i class="fas fa-check-circle mr-2 text-emerald-400"></i><span>Thank you! Your message has been sent successfully.</span></div>';
+                    formStatus.className = 'p-4 rounded-xl text-sm font-medium bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 block';
+                    contactForm.reset();
+                } catch (error) {
+                    formStatus.innerHTML = '<div class="flex items-center"><i class="fas fa-exclamation-circle mr-2 text-rose-400"></i><span>Oops! Something went wrong while sending your message. Please try again.</span></div>';
+                    formStatus.className = 'p-4 rounded-xl text-sm font-medium bg-rose-950/60 border border-rose-500/40 text-rose-300 block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
+                }
+            });
+        }
+    </script>
 </body>
 </html>
